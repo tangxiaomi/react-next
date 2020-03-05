@@ -1,0 +1,12 @@
+{
+  "presets": ["next/babel"], // 延用之前的配置,相当于继承它本身所有的配置
+  "plugins": [ // 增加新的插件
+    [
+      "import",
+      {
+        "libraryName": "antd",  // ant的组件库按需加载
+        // "style": "css" // css也是打包进来 按需加载 为了build成功
+      }
+    ]
+  ]
+}

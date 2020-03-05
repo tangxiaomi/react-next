@@ -1,203 +1,87 @@
-import Head from 'next/head'
+import React from 'react';
+import Link from 'next/link'; // ①标签式跳转
+import Router from 'next/router'; // ②编程式跳转 耦合性比较低
 
-const Home = () => (
-  <div className="container">
-    <Head>
-      <title>Create Next App</title>
-      <link rel="icon" href="/favicon.ico" />
-    </Head>
+// ③传参 只能使用query?id = 1进行传参    不支持path:id来传参
+const Home=() => { // 有返回值 + 业务逻辑的时候用{}   仅仅有返回值的时候用（）
+  function gotoA(){
+    Router.push('/jspangA')
+  }
 
-    <main>
-      <h1 className="title">
-        Welcome to <a href="https://nextjs.org">Next.js!</a>
-      </h1>
+  function gotoBlue(){
+    Router.push({
+      pathname: '/girls',
+      query: {name: 'blue'}
+    })
+  }
 
-      <p className="description">
-        Get started by editing <code>pages/index.js</code>
-      </p>
+  // 路由的钩子事件(6个)；
+  // routeChangeStart ==> 路由发生变化之前
+  // routeChangeComplete ==> 发生结束变化时
+  // beforeHistoryChange ==>  浏览器history触发前
+  // routeChangeError ==> 路由跳转发生错误的时候
+  // hashChangeStart ==> 转变成hash路由模式
+  // hashChangeComplete ==> 
+  Router.events.on('routeChangeStart',(...args) => {
+    //要做的事放这里
+    console.log('1.routechangestart->路由开始变化，参数为', ...args)
+  })
 
-      <div className="grid">
-        <a href="https://nextjs.org/docs" className="card">
-          <h3>Documentation &rarr;</h3>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
+  Router.events.on('routeChangeComplete',(...args) => {
+    //要做的事放这里 取消loading动画， 去掉一些反复的逻辑
+    console.log('2.routeChangeComplete->路由变化结束，参数为', ...args)
+  })
 
-        <a href="https://nextjs.org/learn" className="card">
-          <h3>Learn &rarr;</h3>
-          <p>Learn about Next.js in an interactive course with quizzes!</p>
-        </a>
+  Router.events.on('beforeHistoryChange',(...args) => {
+    //要做的事放这里
+    console.log('3.beforeHistoryChange->浏览器history触发前', ...args)
+  })
 
-        <a
-          href="https://github.com/zeit/next.js/tree/master/examples"
-          className="card"
-        >
-          <h3>Examples &rarr;</h3>
-          <p>Discover and deploy boilerplate example Next.js projects.</p>
-        </a>
+  Router.events.on('routeChangeError',(...args) => {
+    //要做的事放这里
+    console.log('4.routeChangeError->路由跳转发生错误的时候', ...args)
+  })
 
-        <a
-          href="https://zeit.co/new?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          className="card"
-        >
-          <h3>Deploy &rarr;</h3>
-          <p>
-            Instantly deploy your Next.js site to a public URL with ZEIT Now.
-          </p>
-        </a>
-      </div>
-    </main>
+  Router.events.on('hashChangeStart',(...args) => {
+    //要做的事放这里
+    console.log('5.hashChangeStart->路由跳转发生错误的时候', ...args)
+  })
 
-    <footer>
-      <a
-        href="https://zeit.co?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Powered by <img src="/zeit.svg" alt="ZEIT Logo" />
-      </a>
-    </footer>
+  Router.events.on('hashChangeComplete',(...args) => {
+    //要做的事放这里
+    console.log('6.hashChangeComplete->路由跳转发生错误的时候', ...args)
+  })
 
-    <style jsx>{`
-      .container {
-        min-height: 100vh;
-        padding: 0 0.5rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-      }
+  return (
+      <>
+        <div>我是首页---路由的两种跳转方式</div>
+        <div><Link href="/jspangA"><a>A页面</a></Link></div>
+        <div><Link href="/jspangB"><a>B页面</a></Link></div>
+        <div>
+          <button onClick={gotoA}>jspang A</button>
+        </div>
 
-      main {
-        padding: 5rem 0;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-      }
+        <div>我是首页---传参的方式</div>
+        {/* 标签式 */}
+        <div>
+           <Link href={{pathname: '/girls', query: {name: 'red'}}}><a>小红</a></Link>
+           <br/>
+           <Link href="/girls?name=blue"><a>小蓝</a></Link>
+        </div>
+        {/* 编程式 */}
+        <div>
+          <button onClick={gotoBlue}>选小蓝</button>
+        </div>
 
-      footer {
-        width: 100%;
-        height: 100px;
-        border-top: 1px solid #eaeaea;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
+        <div>构建hash</div>
+        <div>
+           <Link href="#jspang"><a>哈希</a></Link>
+        </div>
+      </>
+  )
+}
 
-      footer img {
-        margin-left: 0.5rem;
-      }
+export default Home;
 
-      footer a {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
 
-      a {
-        color: inherit;
-        text-decoration: none;
-      }
-
-      .title a {
-        color: #0070f3;
-        text-decoration: none;
-      }
-
-      .title a:hover,
-      .title a:focus,
-      .title a:active {
-        text-decoration: underline;
-      }
-
-      .title {
-        margin: 0;
-        line-height: 1.15;
-        font-size: 4rem;
-      }
-
-      .title,
-      .description {
-        text-align: center;
-      }
-
-      .description {
-        line-height: 1.5;
-        font-size: 1.5rem;
-      }
-
-      code {
-        background: #fafafa;
-        border-radius: 5px;
-        padding: 0.75rem;
-        font-size: 1.1rem;
-        font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
-          DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
-      }
-
-      .grid {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-wrap: wrap;
-
-        max-width: 800px;
-        margin-top: 3rem;
-      }
-
-      .card {
-        margin: 1rem;
-        flex-basis: 45%;
-        padding: 1.5rem;
-        text-align: left;
-        color: inherit;
-        text-decoration: none;
-        border: 1px solid #eaeaea;
-        border-radius: 10px;
-        transition: color 0.15s ease, border-color 0.15s ease;
-      }
-
-      .card:hover,
-      .card:focus,
-      .card:active {
-        color: #0070f3;
-        border-color: #0070f3;
-      }
-
-      .card h3 {
-        margin: 0 0 1rem 0;
-        font-size: 1.5rem;
-      }
-
-      .card p {
-        margin: 0;
-        font-size: 1.25rem;
-        line-height: 1.5;
-      }
-
-      @media (max-width: 600px) {
-        .grid {
-          width: 100%;
-          flex-direction: column;
-        }
-      }
-    `}</style>
-
-    <style jsx global>{`
-      html,
-      body {
-        padding: 0;
-        margin: 0;
-        font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-          Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-    `}</style>
-  </div>
-)
-
-export default Home
+//  Next.js的生产环境的打包
